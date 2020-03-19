@@ -5,7 +5,7 @@ import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 val sharedSettings = Seq(
   name := "scalacheck-1.14",
-  organization := "dev.travisbrown",
+  organization := "com.sandinh",
   version := "3.1.1.1",
   homepage := Some(url("https://github.com/scalatest/scalatestplus-scalacheck")),
   licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
@@ -25,7 +25,7 @@ val sharedSettings = Seq(
   ),
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.1.1", 
+    "com.sandinh" %%% "scalatest" % "3.1.1",
     ("org.scalacheck" %%% "scalacheck" % "1.14.3").withDottyCompat(scalaVersion.value)
   ),
   scalacOptions += "-language:implicitConversions",
@@ -99,7 +99,7 @@ lazy val scalatestPlusScalaCheck =
       }
     )
     .jvmSettings(
-      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.10", "2.13.1", "0.22.0-RC1"),
+      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.10", "2.13.1", "0.23.0-RC1"),
       sourceGenerators in Compile += {
         Def.task {
           GenResourcesJVM.genResources((sourceManaged in Compile).value / "org" / "scalatestplus" / "scalacheck", version.value, scalaVersion.value) ++
