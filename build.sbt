@@ -50,17 +50,11 @@ val sharedSettings = Seq(
     Def.task {
       GenScalaCheckGen.genTest((sourceManaged in Test).value / "org" / "scalatest" / "check", version.value, scalaVersion.value)
     }
-  }, 
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    Some("publish-releases" at nexus + "service/local/staging/deploy/maven2")
   },
+  publishTo := sonatypePublishToBundle.value,
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
-  credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-  pgpSecretRing := file((Path.userHome / ".sbt" / "gpg" / "secring.asc").getAbsolutePath),
-  pgpPassphrase := None
 )
 
 lazy val scalatestPlusScalaCheck =
