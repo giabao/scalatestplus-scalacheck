@@ -3,10 +3,25 @@ import scalanative.sbtplugin.ScalaNativePluginInternal.NativeTest
 import scala.xml.{Node => XmlNode, NodeSeq => XmlNodeSeq, _}
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
+lazy val versionSuffix = Def.setting {
+  val sv = scalaVersion.value
+  val isDottyNightly = isDotty.value && sv.length > 10 // // "0.xx.0-bin".length
+  if (isDottyNightly) "-dotty" + sv.substring(10)
+  else ""
+}
+lazy val dottyMinorV = Def.setting {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((0, n)) => Some(n)
+    case _            => None
+  }
+}
+
 val sharedSettings = Seq(
   name := "scalacheck-1.14",
-  organization := "com.sandinh",
-  version := "3.1.1.1",
+  organization := (
+    if(dottyMinorV.value.exists(_ > 22)) "com.sandinh"
+    else "org.scalatestplus"),
+  version := "3.1.1.1" + versionSuffix.value,
   homepage := Some(url("https://github.com/scalatest/scalatestplus-scalacheck")),
   licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
   developers := List(
@@ -25,7 +40,8 @@ val sharedSettings = Seq(
   ),
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
-    "com.sandinh" %%% "scalatest" % "3.1.1",
+    ( if(dottyMinorV.value.exists(_ > 22)) "com.sandinh"
+      else "org.scalatest") %%% "scalatest" % ("3.1.1" + versionSuffix.value),
     ("org.scalacheck" %%% "scalacheck" % "1.14.3").withDottyCompat(scalaVersion.value)
   ),
   scalacOptions += "-language:implicitConversions",
@@ -93,7 +109,7 @@ lazy val scalatestPlusScalaCheck =
       }
     )
     .jvmSettings(
-      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.10", "2.13.1", "0.23.0-RC1"),
+      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.10", "2.13.1", "0.23.0-RC1", "0.24.0-bin-20200324-6cd3a9d-NIGHTLY"),
       sourceGenerators in Compile += {
         Def.task {
           GenResourcesJVM.genResources((sourceManaged in Compile).value / "org" / "scalatestplus" / "scalacheck", version.value, scalaVersion.value) ++
