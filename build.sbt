@@ -22,6 +22,10 @@ val sharedSettings = Seq(
     if(dottyMinorV.value.exists(_ > 22)) "com.sandinh"
     else "org.scalatestplus"),
   version := "3.1.1.1" + versionSuffix.value,
+  scmInfo := Some(ScmInfo(
+    url("https://github.com/scalatest/scalatestplus-scalacheck"),
+    "scm:git@github.com:scalatest/scalatestplus-scalacheck.git"
+  )),
   homepage := Some(url("https://github.com/scalatest/scalatestplus-scalacheck")),
   licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
   developers := List(
