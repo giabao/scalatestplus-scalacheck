@@ -113,7 +113,7 @@ lazy val scalatestPlusScalaCheck =
       }
     )
     .jvmSettings(
-      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.10", "2.13.1", "0.23.0-RC1", "0.24.0-bin-20200324-6cd3a9d-NIGHTLY"),
+      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.10", "2.13.1", "0.23.0-RC1", "0.24.0-bin-20200408-4cc224b-NIGHTLY"),
       sourceGenerators in Compile += {
         Def.task {
           GenResourcesJVM.genResources((sourceManaged in Compile).value / "org" / "scalatestplus" / "scalacheck", version.value, scalaVersion.value) ++
