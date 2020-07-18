@@ -68,7 +68,8 @@ val sharedSettings = Seq(
         scm:git:git@github.com:scalatest/scalatestplus-scalacheck.git
       </developerConnection>
     </scm>
-  ),  
+  ),
+  scalaVersion := System.getProperty("scalaVersion", crossScalaVersions.value.last),
   credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 )
 
@@ -106,7 +107,7 @@ lazy val scalatestPlusScalaCheck =
     )
     .jvmSettings(
       crossScalaVersions := List("2.10.7", "2.11.12", "2.12.12", "2.13.3", "0.24.0", "0.25.0-RC2"),
-      Test / scalacOptions ++= (if (isDotty.value) Seq("-language:implicitConversions") else Nil), 
+      Test / scalacOptions ++= (if (isDotty.value) Seq("-language:implicitConversions") else Nil),
       sourceGenerators in Compile += {
         Def.task {
           GenResourcesJVM.genResources((sourceManaged in Compile).value / "org" / "scalatestplus" / "scalacheck", version.value, scalaVersion.value) ++
@@ -115,7 +116,7 @@ lazy val scalatestPlusScalaCheck =
       }
     )
     .nativeSettings(
-      scalaVersion := "2.11.12", 
+      crossScalaVersions := List("2.11.12"),
       nativeLinkStubs in NativeTest := true, 
       sourceGenerators in Compile += {
         Def.task {
