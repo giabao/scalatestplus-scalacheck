@@ -3,9 +3,10 @@ import scalanative.sbtplugin.ScalaNativePluginInternal.NativeTest
 import scala.xml.{Node => XmlNode, NodeSeq => XmlNodeSeq, _}
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
+ThisBuild / organization := "com.sandinh"
+
 val sharedSettings = Seq(
   name := "scalacheck-1.14",
-  organization := "org.scalatestplus",
   version := "3.2.0.0",
   homepage := Some(url("https://github.com/scalatest/scalatestplus-scalacheck")),
   licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
@@ -53,10 +54,7 @@ val sharedSettings = Seq(
       GenScalaCheckGen.genTest((sourceManaged in Test).value / "org" / "scalatest" / "check", version.value, scalaVersion.value)
     }
   }, 
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    Some("publish-releases" at nexus + "service/local/staging/deploy/maven2")
-  },
+  publishTo := sonatypePublishToBundle.value,
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
@@ -70,7 +68,6 @@ val sharedSettings = Seq(
     </scm>
   ),
   scalaVersion := System.getProperty("scalaVersion", crossScalaVersions.value.last),
-  credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 )
 
 lazy val scalatestPlusScalaCheck =
@@ -106,6 +103,16 @@ lazy val scalatestPlusScalaCheck =
       }
     )
     .jvmSettings(
+      libraryDependencies := {
+        val old = libraryDependencies.value
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((0, n)) if n > 24 => old.map {
+            case m if m.organization == "org.scalatest" => m.withOrganization("com.sandinh")
+            case m => m
+          }
+          case _ => old
+        }
+      },
       crossScalaVersions := List("2.10.7", "2.11.12", "2.12.12", "2.13.3", "0.24.0", "0.25.0-RC2"),
       Test / scalacOptions ++= (if (isDotty.value) Seq("-language:implicitConversions") else Nil),
       sourceGenerators in Compile += {
