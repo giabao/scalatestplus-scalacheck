@@ -96,7 +96,7 @@ lazy val scalatestPlusScalaCheck =
       )
     )
     .jsSettings(
-      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.2"),
+      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.12", "2.13.3"),
       sourceGenerators in Compile += {
         Def.task {
           GenResourcesJSVM.genResources((sourceManaged in Compile).value / "org" / "scalatestplus" / "scalacheck", version.value, scalaVersion.value) ++
@@ -105,7 +105,7 @@ lazy val scalatestPlusScalaCheck =
       }
     )
     .jvmSettings(
-      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.11", "2.13.2", "0.24.0"),
+      crossScalaVersions := List("2.10.7", "2.11.12", "2.12.12", "2.13.3", "0.24.0", "0.25.0-RC2"),
       Test / scalacOptions ++= (if (isDotty.value) Seq("-language:implicitConversions") else Nil), 
       sourceGenerators in Compile += {
         Def.task {
