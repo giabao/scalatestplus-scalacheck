@@ -1,0 +1,124 @@
+name: dotty
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-jvm:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ adopt@1.8, adopt@1.11, adopt@1.14 ]
+        scala: [ 2.10.7, 2.11.12, 2.12.12, 2.13.3, 0.24.0, 0.25.0-RC2 ]
+        platform: [ JVM ]
+    name: build ${{ matrix.platform }} / ${{ matrix.java }} / ${{ matrix.scala }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Ivy
+        uses: actions/cache@v1
+        with:
+          path: ~/.ivy2/cache
+          key: ${{ runner.os }}-ivy-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-ivy-
+      - name: Cache Sbt
+        uses: actions/cache@v1
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-sbt-
+      - name: Cache Coursier
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/coursier
+          key: ${{ runner.os }}-coursier-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-coursier-
+      - uses: olafurpg/setup-scala@v7
+        with:
+          java-version: ${{ matrix.java }}
+      - name: build
+        run: sbt ++${{ matrix.scala }} "project scalatestPlusScalaCheck${{ matrix.platform }}" test
+
+  build-native:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ adopt@1.8, adopt@1.11, adopt@1.14 ]
+        scala: [ 2.11.12 ]
+        platform: [ Native ]
+    name: build ${{ matrix.platform }} / ${{ matrix.java }} / ${{ matrix.scala }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Ivy
+        uses: actions/cache@v1
+        with:
+          path: ~/.ivy2/cache
+          key: ${{ runner.os }}-ivy-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-ivy-
+      - name: Cache Sbt
+        uses: actions/cache@v1
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-sbt-
+      - name: Cache Coursier
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/coursier
+          key: ${{ runner.os }}-coursier-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-coursier-
+      - uses: olafurpg/setup-scala@v7
+        with:
+          java-version: ${{ matrix.java }}
+      - name: build
+        run: sbt ++${{ matrix.scala }} "project scalatestPlusScalaCheck${{ matrix.platform }}" test
+
+  build-js:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        js: [ 0.6.33, 1.1.0 ]
+        java: [ adopt@1.8, adopt@1.11, adopt@1.14 ]
+        scala: [ 2.10.7, 2.11.12, 2.12.12, 2.13.3 ]
+        platform: [ JS ]
+        exclude:
+          - js: 1.1.0
+            scala: 2.10.7
+            java: adopt@1.8
+          - js: 1.1.0
+            scala: 2.10.7
+            java: adopt@1.11
+          - js: 1.1.0
+            scala: 2.10.7
+            java: adopt@1.14
+    env:
+      SCALAJS_VERSION: ${{ matrix.js }}
+    name: build-js ${{ matrix.js }} / ${{ matrix.java }} / ${{ matrix.scala }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Ivy
+        uses: actions/cache@v1
+        with:
+          path: ~/.ivy2/cache
+          key: ${{ runner.os }}-ivy-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-ivy-
+      - name: Cache Sbt
+        uses: actions/cache@v1
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-sbt-
+      - name: Cache Coursier
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/coursier
+          key: ${{ runner.os }}-coursier-${{ hashFiles('*.sbt') }}-${{ hashFiles('project/*.*') }}
+          restore-keys: ${{ runner.os }}-coursier-
+      - uses: olafurpg/setup-scala@v7
+        with:
+          java-version: ${{ matrix.java }}
+      - name: build
+        run: sbt ++${{ matrix.scala }} "project scalatestPlusScalaCheck${{ matrix.platform }}" test
